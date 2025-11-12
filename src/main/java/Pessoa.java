@@ -1,6 +1,8 @@
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
 
 
 public class Pessoa {
@@ -84,6 +86,50 @@ public class Pessoa {
             ps.setString(3, email);
             ps.setInt(4, codigo);
             ps.execute();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void deletar () {
+        //1. definir a string sql
+        String sql = "delete from tb_pessoa where codigo = ?";
+        //2. para abrir a conexão, nomear uma fábrica
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        //3. pedir a conexão como recurso do try
+        try (Connection c = connectionFactory.obtemConexao()) {
+            //4. pré compilar o comando sql
+            PreparedStatement ps = c.prepareStatement(sql);
+            //5. preenche o campo que falta
+            ps.setInt(1, codigo);
+            //6. executa o comando
+            ps.execute();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void listar() {
+        //1. criar o comando sql
+        String sql = "select * from tb_pessoa";
+        //2. nomeia a fábrica de conexões
+        ConnectionFactory factory = new ConnectionFactory();
+        //3. pede a conexão no try
+        try (Connection c = factory.obtemConexao()) {
+            //4. pré compila o comando SQL
+            PreparedStatement ps = c.prepareStatement(sql);
+            //5. a execução devolve um conjunto de resultados
+            ResultSet rs = ps.executeQuery();
+            //6. iterar sobre os resultados
+            while (rs.next()) {
+                int codigo = rs.getInt("codigo");
+                String nome = rs.getString("nome");
+                String fone = rs.getString("tel");
+                String email = rs.getString("email");
+                String aux = String.format("Codigo: %d, nome: %s, fone: %s, e-mail: %s", 
+                                       codigo, nome, fone, email);
+                JOptionPane.showMessageDialog(null, aux);
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
